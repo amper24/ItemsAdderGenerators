@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ItemsAdder Crafting Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+        }
+        
+        body {
+            background-color: #f5f6fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .preview-area {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            font-family: 'Consolas', monospace;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 800px;
+            min-height: 600px;
+            overflow-y: auto;
+        }
+
+        .crafting-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .crafting-slot {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .crafting-slot:hover {
+            background-color: #e9ecef;
+        }
+
+        .ingredient-list {
+            margin-top: 15px;
+        }
+
+        .ingredient-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ingredient-item input {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-cube me-2"></i>
+                ItemsAdder Generators
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="itemsadder_generator.html">
+                            <i class="fas fa-cube me-1"></i>Item Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cooking_generator.html">
+                            <i class="fas fa-fire me-1"></i>Cooking Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="crafting_generator.html">
+                            <i class="fas fa-hammer me-1"></i>Crafting Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="loot_generator.html">
+                            <i class="fas fa-gift me-1"></i>Loot Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="hud_generator.html">
+                            <i class="fas fa-desktop me-1"></i>HUD Generator
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recipe Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="recipeForm">
+                            <div class="mb-3">
+                                <label class="form-label">Namespace</label>
+                                <input type="text" class="form-control" id="namespace" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Recipe ID</label>
+                                <input type="text" class="form-control" id="recipeId" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Permission</label>
+                                <input type="text" class="form-control" id="permission">
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="enabled" checked>
+                                    <label class="form-check-label">Enabled</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Recipe Type</label>
+                                <select class="form-select" id="recipeType" onchange="toggleRecipeType()">
+                                    <option value="crafting_table">Shaped Recipe</option>
+                                    <option value="crafting_table">Shapeless Recipe</option>
+                                    <option value="anvil_repair">Anvil Repair Recipe</option>
+                                </select>
+                            </div>
+
+                            <!-- Anvil Repair Recipe Section -->
+                            <div id="anvilRepairSection" class="recipe-type-section" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Item to Repair</label>
+                                    <input type="text" class="form-control" id="repairItem" placeholder="namespace:item_id">
+                                    <small class="text-muted">The item that will be repaired (e.g., iasurvival:emerald_sword)</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Repair Material</label>
+                                    <input type="text" class="form-control" id="repairMaterial" placeholder="EMERALD_BLOCK">
+                                    <small class="text-muted">The material used to repair the item</small>
+                                </div>
+                            </div>
+
+                            <!-- Shaped Recipe Section -->
+                            <div id="shapedSection" class="recipe-type-section">
+                                <div class="mb-3">
+                                    <label class="form-label">Pattern</label>
+                                    <div class="crafting-grid" id="craftingGrid">
+                                        <!-- Grid will be generated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Shapeless Recipe Section -->
+                            <div id="shapelessSection" class="recipe-type-section" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Ingredients</label>
+                                    <div id="shapelessIngredientsList" class="ingredient-list">
+                                        <!-- Ingredients will be added here -->
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary mt-2" onclick="addShapelessIngredient()">
+                                        <i class="fas fa-plus me-2"></i>Add Ingredient
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Common Recipe Settings -->
+                            <div id="commonSettings" class="recipe-type-section">
+                                <div class="mb-3">
+                                    <label class="form-label">Result</label>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <input type="text" class="form-control" id="resultItem" placeholder="namespace:item_id">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="number" class="form-control" id="resultAmount" value="1" min="1">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Return Items</label>
+                                    <div id="returnItemsList">
+                                        <!-- Return items will be added here -->
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary mt-2" onclick="addReturnItem()">
+                                        <i class="fas fa-plus me-2"></i>Add Return Item
+                                    </button>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Sound</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="soundName" placeholder="namespace:sound_id">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" id="soundVolume" value="1" step="0.1">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" class="form-control" id="soundPitch" value="1" step="0.1">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Generate Recipe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="preview-area" id="preview">
+                            <pre>Recipe will appear here...</pre>
+                        </div>
+                        <button class="btn btn-primary mt-3" onclick="copyToClipboard()">
+                            <i class="fas fa-copy me-2"></i>Copy to Clipboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize crafting grid
+        function initializeCraftingGrid() {
+            const grid = document.getElementById('craftingGrid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 9; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'crafting-slot';
+                slot.setAttribute('data-index', i);
+                slot.setAttribute('onclick', 'selectSlot(this)');
+                slot.textContent = 'X';
+                grid.appendChild(slot);
+            }
+        }
+
+        // Add ingredient
+        function addIngredient() {
+            const list = document.getElementById('ingredientsList');
+            const div = document.createElement('div');
+            div.className = 'ingredient-item';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="Key (e.g., A)" style="width: 100px;">
+                <input type="text" class="form-control ms-2" placeholder="Item (e.g., DIAMOND)">
+                <button type="button" class="btn btn-outline-danger ms-2" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            list.appendChild(div);
+            
+            // Add listeners to new inputs
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', generateConfig);
+                input.addEventListener('change', generateConfig);
+            });
+        }
+
+        // Add return item
+        function addReturnItem() {
+            const list = document.getElementById('returnItemsList');
+            const div = document.createElement('div');
+            div.className = 'ingredient-item';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="Item ID" style="width: 200px;">
+                <input type="number" class="form-control ms-2" placeholder="Amount" style="width: 100px;" value="1">
+                <button type="button" class="btn btn-outline-danger ms-2" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            list.appendChild(div);
+            
+            // Add listeners to new inputs
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', generateConfig);
+                input.addEventListener('change', generateConfig);
+            });
+        }
+
+        // Select slot in crafting grid
+        function selectSlot(slot) {
+            const key = prompt('Enter ingredient key (e.g., A, B, C):');
+            if (key) {
+                slot.textContent = key;
+            }
+        }
+
+        // Add shapeless ingredient
+        function addShapelessIngredient() {
+            const list = document.getElementById('shapelessIngredientsList');
+            const div = document.createElement('div');
+            div.className = 'ingredient-item';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="Item (e.g., DIAMOND)">
+                <button type="button" class="btn btn-outline-danger ms-2" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            list.appendChild(div);
+        }
+
+        // Toggle recipe type
+        function toggleRecipeType() {
+            const recipeType = document.getElementById('recipeType').value;
+            const isAnvilRepair = recipeType === 'anvil_repair';
+            const isShapeless = recipeType === 'crafting_table' && document.getElementById('recipeType').selectedIndex === 1;
+
+            document.getElementById('shapedSection').style.display = (!isAnvilRepair && !isShapeless) ? 'block' : 'none';
+            document.getElementById('shapelessSection').style.display = isShapeless ? 'block' : 'none';
+            document.getElementById('anvilRepairSection').style.display = isAnvilRepair ? 'block' : 'none';
+            document.getElementById('commonSettings').style.display = !isAnvilRepair ? 'block' : 'none';
+        }
+
+        // Generate recipe
+        document.getElementById('recipeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateConfig();
+        });
+
+        // Add real-time update listeners
+        const formInputs = document.querySelectorAll('#recipeForm input, #recipeForm select, #recipeForm textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('input', generateConfig);
+            input.addEventListener('change', generateConfig);
+        });
+
+        function generateConfig() {
+            const namespace = document.getElementById('namespace').value;
+            const recipeId = document.getElementById('recipeId').value;
+            const permission = document.getElementById('permission').value;
+            const enabled = document.getElementById('enabled').checked;
+            const recipeType = document.getElementById('recipeType').value;
+            const isAnvilRepair = recipeType === 'anvil_repair';
+            const isShapeless = recipeType === 'crafting_table' && document.getElementById('recipeType').selectedIndex === 1;
+
+            let config = `info:
+  namespace: ${namespace}
+recipes:
+  ${recipeType}:
+    ${recipeId}:
+      enabled: ${enabled}`;
+
+            if (permission) {
+                config += `\n      permission: ${permission}`;
+            }
+
+            if (isAnvilRepair) {
+                const repairItem = document.getElementById('repairItem').value;
+                const repairMaterial = document.getElementById('repairMaterial').value;
+                config += `\n      ingredient: ${repairMaterial}
+      item: ${repairItem}`;
+            } else {
+                if (isShapeless) {
+                    config += `\n      shapeless: true`;
+                } else {
+                    const slots = document.querySelectorAll('.crafting-slot');
+                    const pattern = [];
+                    let currentRow = '';
+                    slots.forEach((slot, index) => {
+                        currentRow += slot.textContent;
+                        if ((index + 1) % 3 === 0) {
+                            pattern.push(currentRow);
+                            currentRow = '';
+                        }
+                    });
+                    config += `\n      pattern:`;
+                    pattern.forEach(row => {
+                        config += `\n      - ${row}`;
+                    });
+                }
+
+                // Add ingredients
+                config += `\n      ingredients:`;
+                if (isShapeless) {
+                    const ingredients = document.querySelectorAll('#shapelessIngredientsList .ingredient-item input');
+                    ingredients.forEach(input => {
+                        if (input.value) {
+                            config += `\n        - ${input.value}`;
+                        }
+                    });
+                } else {
+                    const ingredients = document.querySelectorAll('#ingredientsList .ingredient-item');
+                    ingredients.forEach(ingredient => {
+                        const inputs = ingredient.querySelectorAll('input');
+                        const key = inputs[0].value;
+                        const item = inputs[1].value;
+                        if (key && item) {
+                            config += `\n        ${key}: ${item}`;
+                        }
+                    });
+                }
+
+                // Add result
+                const resultItem = document.getElementById('resultItem').value;
+                const resultAmount = document.getElementById('resultAmount').value;
+                if (resultItem) {
+                    config += `\n      result:
+        item: ${resultItem}
+        amount: ${resultAmount}`;
+                }
+
+                // Add return items
+                const returnItems = document.querySelectorAll('#returnItemsList .ingredient-item');
+                if (returnItems.length > 0) {
+                    config += `\n      return_items:`;
+                    returnItems.forEach(item => {
+                        const inputs = item.querySelectorAll('input');
+                        const itemId = inputs[0].value;
+                        const amount = inputs[1].value;
+                        if (itemId && amount) {
+                            config += `\n        ${itemId}:
+          amount: ${amount}`;
+                        }
+                    });
+                }
+
+                // Add sound
+                const soundName = document.getElementById('soundName').value;
+                if (soundName) {
+                    const soundVolume = document.getElementById('soundVolume').value;
+                    const soundPitch = document.getElementById('soundPitch').value;
+                    config += `\n      play_sound:
+        name: ${soundName}
+        volume: ${soundVolume}
+        pitch: ${soundPitch}`;
+                }
+            }
+
+            document.getElementById('preview').innerHTML = `<pre>${config}</pre>`;
+        }
+
+        function copyToClipboard() {
+            const preview = document.getElementById('preview').textContent;
+            navigator.clipboard.writeText(preview).then(() => {
+                alert('Recipe copied to clipboard!');
+            });
+        }
+
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCraftingGrid();
+            // Prevent form submission on Enter key
+            document.getElementById('recipeForm').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

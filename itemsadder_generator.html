@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ItemsAdder Configuration Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+        }
+        
+        body {
+            background-color: #f5f6fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .preview-area {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            font-family: 'Consolas', monospace;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 800px;
+            min-height: 600px;
+            overflow-y: auto;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--secondary-color);
+        }
+
+        .item-type-section {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+
+        .item-type-section.active {
+            display: block;
+        }
+
+        .properties-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .form-check {
+            margin-bottom: 10px;
+        }
+
+        .form-check-input:checked + .form-check-label {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection {
+            min-height: 38px;
+        }
+        .select2-container--bootstrap-5 .select2-selection--single {
+            padding: 0.375rem 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-cube me-2"></i>
+                ItemsAdder Generators
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="itemsadder_generator.html">
+                            <i class="fas fa-cube me-1"></i>Item Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cooking_generator.html">
+                            <i class="fas fa-fire me-1"></i>Cooking Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="crafting_generator.html">
+                            <i class="fas fa-hammer me-1"></i>Crafting Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="loot_generator.html">
+                            <i class="fas fa-gift me-1"></i>Loot Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="hud_generator.html">
+                            <i class="fas fa-desktop me-1"></i>HUD Generator
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Item Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="itemForm">
+                            <div class="mb-3">
+                                <label class="form-label">Namespace</label>
+                                <input type="text" class="form-control" id="namespace" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Item ID</label>
+                                <input type="text" class="form-control" id="itemId" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Display Name</label>
+                                <input type="text" class="form-control" id="displayName" required>
+                            </div>
+
+                            <div class="properties-header">
+                                <h6>Item Properties</h6>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isConsumable" onchange="toggleSection('consumableProperties')">
+                                <label class="form-check-label">Is Consumable</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isArmor" onchange="toggleSection('armorProperties')">
+                                <label class="form-check-label">Is Armor</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isWeapon" onchange="toggleSection('weaponProperties')">
+                                <label class="form-check-label">Attributes</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isHat" onchange="toggleSection('hatProperties')">
+                                <label class="form-check-label">Is Hat</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isBlock" onchange="toggleSection('blockProperties')">
+                                <label class="form-check-label">Is Block</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isFurniture" onchange="toggleSection('furnitureProperties')">
+                                <label class="form-check-label">Is Furniture</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isFuel" onchange="toggleSection('fuelProperties')">
+                                <label class="form-check-label">Is Fuel</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isJukeboxDisc" onchange="toggleSection('jukeboxDiscProperties')">
+                                <label class="form-check-label">Is Jukebox Disc</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hasCustomTooltip" onchange="toggleSection('tooltipProperties')">
+                                <label class="form-check-label">Has Custom Tooltip</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isGenerated" onchange="toggleGenerateFields()">
+                                <label class="form-check-label">Generate Resource</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hasDurability" onchange="toggleSection('durabilityProperties')">
+                                <label class="form-check-label">Has Durability</label>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Material</label>
+                                <select class="form-select" id="material" style="width: 100%">
+                                    <option value="">Type to search or enter custom value...</option>
+                                </select>
+                                <small class="text-muted">You can select from Minecraft items or enter custom value</small>
+                            </div>
+
+                            <div class="mb-3" id="modelPathSection">
+                                <label class="form-label">Model Path</label>
+                                <input type="text" class="form-control" id="modelPath">
+                                <small class="text-muted">Used when generate is false (optional)</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Lore</label>
+                                <div id="loreList">
+                                    <div class="lore-entry mb-2">
+                                        <div class="input-group">
+                                            <textarea class="form-control" placeholder="Enter lore (use & for color codes)" rows="2"></textarea>
+                                            <button type="button" class="btn btn-outline-danger" onclick="removeLore(this)">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary mt-2" onclick="addLore()">
+                                    <i class="fas fa-plus me-2"></i>Add Lore Block
+                                </button>
+                                <small class="text-muted d-block mt-1">Use & for color codes (e.g., &a for green)</small>
+                            </div>
+
+                            <!-- Consumable Properties -->
+                            <div id="consumableProperties" class="item-type-section">
+                                <h6 class="mb-3">Consumable Properties</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Consumable Type</label>
+                                    <select class="form-select" id="consumableType" onchange="updateConsumableType()">
+                                        <option value="food">Food</option>
+                                        <option value="drink">Drink</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Nutrition</label>
+                                    <input type="number" class="form-control" id="nutrition" min="0" max="20">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Saturation</label>
+                                    <input type="number" class="form-control" id="saturation" min="0" max="20">
+                                </div>
+                                <div id="drinkProperties" style="display: none;">
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="hasThirst">
+                                            <label class="form-check-label">Has Thirst Effect</label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3" id="thirstAmountSection" style="display: none;">
+                                        <label class="form-label">Thirst Amount</label>
+                                        <input type="number" class="form-control" id="thirstAmount" min="0" max="20">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Armor Properties -->
+                            <div id="armorProperties" class="item-type-section">
+                                <h6 class="mb-3">Armor Properties</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Armor Set ID</label>
+                                    <input type="text" class="form-control" id="armorSetId" placeholder="my_armor_1">
+                                    <small class="text-muted">Unique ID for the armor set</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Armor Slot</label>
+                                    <select class="form-select" id="armorSlot">
+                                        <option value="head">Head</option>
+                                        <option value="chest">Chest</option>
+                                        <option value="legs">Legs</option>
+                                        <option value="feet">Feet</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Armor Points</label>
+                                    <input type="number" class="form-control" id="armorPoints" min="0" max="20" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Armor Toughness</label>
+                                    <input type="number" class="form-control" id="armorToughness" min="0" max="20" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Knockback Resistance</label>
+                                    <input type="number" class="form-control" id="knockbackResistance" min="0" max="1" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Movement Speed</label>
+                                    <input type="number" class="form-control" id="movementSpeed" min="-1" max="1" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Attack Speed</label>
+                                    <input type="number" class="form-control" id="attackSpeed" min="-1" max="1" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Attack Damage</label>
+                                    <input type="number" class="form-control" id="attackDamage" min="-1" max="1" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Attack Knockback</label>
+                                    <input type="number" class="form-control" id="attackKnockback" min="-1" max="1" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Flying Speed</label>
+                                    <input type="number" class="form-control" id="flyingSpeed" min="-1" max="1" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Luck</label>
+                                    <input type="number" class="form-control" id="luck" min="-1" max="1" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is3DArmor">
+                                        <label class="form-check-label">Is 3D Armor</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="armorLayersSection">
+                                    <label class="form-label">Armor Layers</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Layer 1</label>
+                                            <input type="text" class="form-control" id="armorLayer1" placeholder="armor/my_armor_1/layer_1">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Layer 2</label>
+                                            <input type="text" class="form-control" id="armorLayer2" placeholder="armor/my_armor_1/layer_2">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Weapon Properties -->
+                            <div id="weaponProperties" class="item-type-section">
+                                <h6 class="mb-3">Attribute Modifiers</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Slot</label>
+                                    <select class="form-select" id="attributeSlot" onchange="updateAttributeSlot()">
+                                        <option value="mainhand">Main Hand</option>
+                                        <option value="offhand">Off Hand</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Generic Attributes</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Max Health</label>
+                                            <input type="number" class="form-control attribute-input" data-attribute="maxHealth" step="0.1" value="0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Movement Speed</label>
+                                            <input type="number" class="form-control attribute-input" data-attribute="movementSpeed" step="0.1" value="0">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Attack Damage</label>
+                                            <input type="number" class="form-control attribute-input" data-attribute="attackDamage" step="0.1" value="0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Attack Speed</label>
+                                            <input type="number" class="form-control attribute-input" data-attribute="attackSpeed" step="0.1" value="0">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Armor</label>
+                                            <input type="number" class="form-control attribute-input" data-attribute="armor" step="0.1" value="0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Armor Toughness</label>
+                                            <input type="number" class="form-control attribute-input" data-attribute="armorToughness" step="0.1" value="0">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Attack Knockback</label>
+                                            <input type="number" class="form-control attribute-input" data-attribute="attackKnockback" step="0.1" value="0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Luck</label>
+                                            <input type="number" class="form-control attribute-input" data-attribute="luck" step="0.1" value="0">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Knockback Resistance</label>
+                                            <input type="number" class="form-control attribute-input" data-attribute="knockbackResistance" step="0.1" value="0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Flying Speed</label>
+                                            <input type="number" class="form-control attribute-input" data-attribute="flyingSpeed" step="0.1" value="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Durability Properties -->
+                            <div id="durabilityProperties" class="item-type-section">
+                                <h6 class="mb-3">Durability Properties</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Max Custom Durability</label>
+                                    <input type="number" class="form-control" id="maxCustomDurability" min="1" max="1000" value="200">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Custom Durability</label>
+                                    <input type="number" class="form-control" id="customDurability" min="0" max="1000" value="32">
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="disappearWhenBroken">
+                                        <label class="form-check-label">Disappear When Broken</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="unbreakable">
+                                        <label class="form-check-label">Unbreakable</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Usages</label>
+                                    <input type="number" class="form-control" id="usages" min="1" max="1000" value="5">
+                                </div>
+                            </div>
+
+                            <!-- Item Flags -->
+                            <div class="mb-3">
+                                <h6 class="mb-3">Item Flags</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="hideAttributes">
+                                    <label class="form-check-label">Hide Attributes</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="hideDestroys">
+                                    <label class="form-check-label">Hide Destroys</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="hideEnchants">
+                                    <label class="form-check-label">Hide Enchants</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="hidePlacedOn">
+                                    <label class="form-check-label">Hide Placed On</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="hidePotionEffects">
+                                    <label class="form-check-label">Hide Potion Effects</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="hideUnbreakable">
+                                    <label class="form-check-label">Hide Unbreakable</label>
+                                </div>
+                            </div>
+
+                            <!-- Drop Properties -->
+                            <div class="mb-3">
+                                <h6 class="mb-3">Drop Properties</h6>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dropGlow" onchange="toggleDropGlow()">
+                                        <label class="form-check-label">Enable Glow Effect</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="glowColorSection" style="display: none;">
+                                    <label class="form-label">Glow Color</label>
+                                    <select class="form-select" id="glowColor">
+                                        <option value="AQUA">AQUA</option>
+                                        <option value="BLACK">BLACK</option>
+                                        <option value="BLUE">BLUE</option>
+                                        <option value="DARK_AQUA">DARK_AQUA</option>
+                                        <option value="DARK_BLUE">DARK_BLUE</option>
+                                        <option value="DARK_GRAY">DARK_GRAY</option>
+                                        <option value="DARK_GREEN">DARK_GREEN</option>
+                                        <option value="DARK_PURPLE">DARK_PURPLE</option>
+                                        <option value="DARK_RED">DARK_RED</option>
+                                        <option value="GOLD">GOLD</option>
+                                        <option value="GRAY">GRAY</option>
+                                        <option value="GREEN">GREEN</option>
+                                        <option value="LIGHT_PURPLE">LIGHT_PURPLE</option>
+                                        <option value="RED">RED</option>
+                                        <option value="WHITE">WHITE</option>
+                                        <option value="YELLOW">YELLOW</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showDropName">
+                                        <label class="form-check-label">Show Name When Dropped</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="fireResistant">
+                                    <label class="form-check-label">Fire Resistant</label>
+                                </div>
+                            </div>
+
+                            <!-- Block Properties -->
+                            <div id="blockProperties" class="item-type-section">
+                                <h6 class="mb-3">Block Properties</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Block Type</label>
+                                    <select class="form-select" id="blockType" onchange="updateBlockTypeInfo()">
+                                        <option value="REAL_NOTE">REAL_NOTE - Note Block (Max 750 blocks)</option>
+                                        <option value="REAL">REAL - Mushroom Block (Max 191 blocks)</option>
+                                        <option value="REAL_TRANSPARENT">REAL_TRANSPARENT - Chorus Block (Max 63 blocks)</option>
+                                        <option value="REAL_WIRE">REAL_WIRE - Tripwire Block (Max 127 blocks)</option>
+                                        <option value="TILE">TILE - Spawner Block (No limit)</option>
+                                        <option value="FIRE">FIRE - Fire Block (Max 14 blocks)</option>
+                                    </select>
+                                    <div id="blockTypeInfo" class="form-text mt-2"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="shiftUp">
+                                        <label class="form-check-label">Shift Up</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="hasCustomVariants" onchange="toggleCustomVariants()">
+                                        <label class="form-check-label">Has Custom Variants</label>
+                                    </div>
+                                </div>
+                                <div id="customVariantsSection" style="display: none;">
+                                    <div class="mb-3">
+                                        <label class="form-label">Custom Variants</label>
+                                        <div id="variantsList">
+                                            <div class="variant-entry mb-2">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" placeholder="Variant ID (e.g., variant_1)">
+                                                    <input type="text" class="form-control" placeholder="Model Path (e.g., graves/1)">
+                                                    <button type="button" class="btn btn-outline-danger" onclick="removeVariant(this)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-primary mt-2" onclick="addVariant()">
+                                            <i class="fas fa-plus me-2"></i>Add Variant
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Hardness</label>
+                                    <input type="number" class="form-control" id="blockHardness" min="0" max="100" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Blast Resistance</label>
+                                    <input type="number" class="form-control" id="blastResistance" min="0" max="100" step="0.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Break Particles</label>
+                                    <select class="form-select" id="breakParticles">
+                                        <option value="ITEM">Item</option>
+                                        <option value="BLOCK">Block</option>
+                                        <option value="NONE">None</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <h6>Drop Settings</h6>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dropWhenMined">
+                                        <label class="form-check-label">Drop When Mined</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dropOnShears">
+                                        <label class="form-check-label">Drop On Shears</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dropOnSilkTouch">
+                                        <label class="form-check-label">Drop On Silk Touch</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <h6>Explosion Settings</h6>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="noExplosion">
+                                        <label class="form-check-label">No Explosion</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <h6>Tool Lists</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Break Tools Blacklist</label>
+                                        <div id="breakToolsBlacklist">
+                                            <div class="tool-entry mb-2">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" placeholder="Tool ID (e.g., test:1)">
+                                                    <button type="button" class="btn btn-outline-danger" onclick="removeTool(this, 'breakToolsBlacklist')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-primary mt-2" onclick="addTool('breakToolsBlacklist')">
+                                            <i class="fas fa-plus me-2"></i>Add Tool
+                                        </button>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Break Tools Whitelist</label>
+                                        <div id="breakToolsWhitelist">
+                                            <div class="tool-entry mb-2">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" placeholder="Tool ID (e.g., test:5)">
+                                                    <button type="button" class="btn btn-outline-danger" onclick="removeTool(this, 'breakToolsWhitelist')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-primary mt-2" onclick="addTool('breakToolsWhitelist')">
+                                            <i class="fas fa-plus me-2"></i>Add Tool
+                                        </button>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Events Tools Blacklist</label>
+                                        <div id="eventsToolsBlacklist">
+                                            <div class="tool-entry mb-2">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" placeholder="Tool ID (e.g., test:1)">
+                                                    <button type="button" class="btn btn-outline-danger" onclick="removeTool(this, 'eventsToolsBlacklist')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-primary mt-2" onclick="addTool('eventsToolsBlacklist')">
+                                            <i class="fas fa-plus me-2"></i>Add Tool
+                                        </button>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Events Tools Whitelist</label>
+                                        <div id="eventsToolsWhitelist">
+                                            <div class="tool-entry mb-2">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" placeholder="Tool ID (e.g., test:5)">
+                                                    <button type="button" class="btn btn-outline-danger" onclick="removeTool(this, 'eventsToolsWhitelist')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-primary mt-2" onclick="addTool('eventsToolsWhitelist')">
+                                            <i class="fas fa-plus me-2"></i>Add Tool
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Block Sounds</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Break Sound</label>
+                                            <input type="text" class="form-control" id="breakSound" placeholder="block.wood.break">
+                                            <input type="number" class="form-control mt-1" id="breakSoundPitch" placeholder="Pitch" step="0.1" value="1.0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Place Sound</label>
+                                            <input type="text" class="form-control" id="placeSound" placeholder="block.wood.place">
+                                            <input type="number" class="form-control mt-1" id="placeSoundPitch" placeholder="Pitch" step="0.1" value="1.0">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Hit Sound</label>
+                                            <input type="text" class="form-control" id="hitSound" placeholder="block.wood.hit">
+                                            <input type="number" class="form-control mt-1" id="hitSoundPitch" placeholder="Pitch" step="0.1" value="1.0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Step Sound</label>
+                                            <input type="text" class="form-control" id="stepSound" placeholder="block.wood.step">
+                                            <input type="number" class="form-control mt-1" id="stepSoundPitch" placeholder="Pitch" step="0.1" value="1.0">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Fall Sound</label>
+                                            <input type="text" class="form-control" id="fallSound" placeholder="block.wood.fall">
+                                            <input type="number" class="form-control mt-1" id="fallSoundPitch" placeholder="Pitch" step="0.1" value="1.0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Furniture Properties -->
+                            <div id="furnitureProperties" class="item-type-section">
+                                <h6 class="mb-3">Furniture Properties</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Entity Type</label>
+                                    <select class="form-select" id="furnitureEntity" onchange="updateFurnitureEntityType()">
+                                        <option value="item_display">Item Display</option>
+                                        <option value="block_display">Block Display</option>
+                                        <option value="armor_stand">Armor Stand</option>
+                                        <option value="item_frame">Item Frame</option>
+                                    </select>
+                                </div>
+
+                                <div id="armorStandProperties" class="mb-3" style="display: none;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="armorStandSmall" checked>
+                                        <label class="form-check-label">Small Armor Stand</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="armorStandFixedRotation" checked>
+                                        <label class="form-check-label">Fixed Rotation</label>
+                                    </div>
+                                </div>
+
+                                <div id="itemFrameProperties" class="mb-3" style="display: none;">
+                                    <div class="mb-3">
+                                        <label class="form-label">Light Level</label>
+                                        <input type="number" class="form-control" id="itemFrameLightLevel" min="0" max="15" value="0">
+                                        <small class="text-muted">Light level emitted by the item frame (0-15)</small>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Break Particles</label>
+                                    <select class="form-select" id="furnitureBreakParticles">
+                                        <option value="ITEM">Item</option>
+                                        <option value="BLOCK">Block</option>
+                                        <option value="NONE">None</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="furnitureDropWhenMined">
+                                        <label class="form-check-label">Drop When Mined</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Display Transformation</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label">X</label>
+                                            <input type="number" class="form-control" id="furnitureX" step="0.1" value="0">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Y</label>
+                                            <input type="number" class="form-control" id="furnitureY" step="0.1" value="0.5">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Z</label>
+                                            <input type="number" class="form-control" id="furnitureZ" step="0.1" value="0">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="furnitureSolid" checked>
+                                        <label class="form-check-label">Solid</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Placeable On</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="furnitureFloor" checked>
+                                        <label class="form-check-label">Floor</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="furnitureCeiling">
+                                        <label class="form-check-label">Ceiling</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="furnitureWalls">
+                                        <label class="form-check-label">Walls</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="furnitureFixedRotation" checked>
+                                        <label class="form-check-label">Fixed Rotation</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="isChair" onchange="toggleChairProperties()">
+                                        <label class="form-check-label">Is Chair</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="chairProperties" style="display: none;">
+                                    <label class="form-label">Sit Height</label>
+                                    <input type="number" class="form-control" id="sitHeight" min="0" max="10" step="0.1" value="0.5">
+                                    <small class="text-muted">Height at which the player will sit on the chair</small>
+                                    
+                                    <div class="form-check mt-3">
+                                        <input class="form-check-input" type="checkbox" id="oppositeDirection" checked>
+                                        <label class="form-check-label">Opposite Direction</label>
+                                        <small class="text-muted d-block">Rotate the player 180 degrees when sitting</small>
+                                    </div>
+                                    
+                                    <div class="form-check mt-3">
+                                        <input class="form-check-input" type="checkbox" id="passengerFrontView" checked>
+                                        <label class="form-check-label">Front View on Sit</label>
+                                        <small class="text-muted d-block">Rotate the player to face the front of the furniture</small>
+                                    </div>
+                                    
+                                    <div class="form-check mt-3">
+                                        <input class="form-check-input" type="checkbox" id="passengerRotateBody">
+                                        <label class="form-check-label">Rotate Body</label>
+                                        <small class="text-muted d-block">Rotate the player body while sitting</small>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Hitbox</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Height</label>
+                                            <input type="number" class="form-control" id="furnitureHeight" value="1">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Width</label>
+                                            <input type="number" class="form-control" id="furnitureWidth" value="1">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Length</label>
+                                            <input type="number" class="form-control" id="furnitureLength" value="1">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-4">
+                                            <label class="form-label">X Offset</label>
+                                            <input type="number" class="form-control" id="furnitureXOffset" value="0" step="0.1">
+                                            <small class="text-muted">Horizontal offset</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Y Offset</label>
+                                            <input type="number" class="form-control" id="furnitureYOffset" value="0" step="0.1">
+                                            <small class="text-muted">Vertical offset</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Z Offset</label>
+                                            <input type="number" class="form-control" id="furnitureZOffset" value="0" step="0.1">
+                                            <small class="text-muted">Depth offset</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Sounds</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Break Sound</label>
+                                            <input type="text" class="form-control" id="furnitureBreakSound" placeholder="block.wood.break">
+                                            <input type="number" class="form-control mt-1" id="furnitureBreakSoundPitch" placeholder="Pitch" step="0.1" value="1.0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Place Sound</label>
+                                            <input type="text" class="form-control" id="furniturePlaceSound" placeholder="block.wood.place">
+                                            <input type="number" class="form-control mt-1" id="furniturePlaceSoundPitch" placeholder="Pitch" step="0.1" value="1.0">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Hit Sound</label>
+                                            <input type="text" class="form-control" id="furnitureHitSound" placeholder="block.wood.hit">
+                                            <input type="number" class="form-control mt-1" id="furnitureHitSoundPitch" placeholder="Pitch" step="0.1" value="1.0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Step Sound</label>
+                                            <input type="text" class="form-control" id="furnitureStepSound" placeholder="block.wood.step">
+                                            <input type="number" class="form-control mt-1" id="furnitureStepSoundPitch" placeholder="Pitch" step="0.1" value="1.0">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Fall Sound</label>
+                                            <input type="text" class="form-control" id="furnitureFallSound" placeholder="block.wood.fall">
+                                            <input type="number" class="form-control mt-1" id="furnitureFallSoundPitch" placeholder="Pitch" step="0.1" value="1.0">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Break Event</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Item</label>
+                                            <input type="text" class="form-control" id="furnitureBreakItem" placeholder="brewing_pot">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Min Amount</label>
+                                            <input type="number" class="form-control" id="furnitureBreakMin" value="1">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Max Amount</label>
+                                            <input type="number" class="form-control" id="furnitureBreakMax" value="1">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Chance (%)</label>
+                                            <input type="number" class="form-control" id="furnitureBreakChance" value="100">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fuel Properties -->
+                            <div id="fuelProperties" class="item-type-section">
+                                <h6 class="mb-3">Fuel Properties</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Burn Time (ticks)</label>
+                                    <input type="number" class="form-control" id="burnTicks" min="1" value="20">
+                                    <small class="text-muted">20 ticks = 1 second</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Allowed Machines</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="furnaceFuel" checked>
+                                        <label class="form-check-label">Furnace</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="blastFurnaceFuel">
+                                        <label class="form-check-label">Blast Furnace</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="smokerFuel">
+                                        <label class="form-check-label">Smoker</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Jukebox Disc Properties -->
+                            <div id="jukeboxDiscProperties" class="item-type-section">
+                                <h6 class="mb-3">Jukebox Disc Properties</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Song Sound</label>
+                                    <input type="text" class="form-control" id="jukeboxSong" placeholder="namespace:sound_id">
+                                    <small class="text-muted">The sound to be played (e.g., my_sounds:song_1)</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Sound Description</label>
+                                    <input type="text" class="form-control" id="jukeboxDescription" placeholder="Love Song">
+                                    <small class="text-muted">Description shown in player hotbar</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Sound Subtitle</label>
+                                    <input type="text" class="form-control" id="jukeboxSubtitle" placeholder="sound.song_1">
+                                    <small class="text-muted">Subtitle shown when playing the disc</small>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="jukeboxEnabled" checked>
+                                        <label class="form-check-label">Enable Jukebox Property</label>
+                                    </div>
+                                    <small class="text-muted">Enable this sound to be used in Minecraft 1.21.1+ jukebox component</small>
+                                </div>
+                            </div>
+
+                            <!-- Tooltip Properties -->
+                            <div id="tooltipProperties" class="item-type-section">
+                                <h6 class="mb-3">Tooltip Properties</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Tooltip Style</label>
+                                    <input type="text" class="form-control" id="tooltipStyle" placeholder="namespace:tooltip/style">
+                                    <small class="text-muted">Path to tooltip texture (e.g., test_tooltip:tooltip/rainbow)</small>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="tooltipAnimated">
+                                        <label class="form-check-label">Animated Tooltip</label>
+                                    </div>
+                                    <small class="text-muted">Enable if you have a .png.mcmeta file for animation</small>
+                                </div>
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">Important Notes:</h6>
+                                    <ul class="mb-0">
+                                        <li>Create your tooltip texture in <code>contents/namespace/textures/tooltip/</code></li>
+                                        <li>Custom enchants will not be shown in the tooltip</li>
+                                        <li>All text must be included in the tooltip image</li>
+                                        <li>Run <code>/iazip</code> after adding tooltip textures</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Multiple Textures Section -->
+                            <div class="mb-3" id="texturesSection">
+                                <label class="form-label">Textures</label>
+                                <div id="texturesList">
+                                    <div class="texture-entry mb-2">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="Path to texture (e.g., table/toolsmithing_table_bottom.png)">
+                                            <button type="button" class="btn btn-outline-danger" onclick="removeTexture(this)">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary mt-2" onclick="addTexture()">
+                                    <i class="fas fa-plus me-2"></i>Add Texture
+                                </button>
+                                <small class="text-muted d-block mt-1">Used when generate is true</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Generate Configuration</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="preview-area" id="preview">
+                            <pre>Configuration will appear here...</pre>
+                        </div>
+                        <button class="btn btn-primary mt-3" onclick="copyToClipboard()">
+                            <i class="fas fa-copy me-2"></i>Copy to Clipboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="js/minecraft_items.js"></script>
+    <script>
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const checkbox = document.querySelector(`input[onchange="toggleSection('${sectionId}')"]`);
+            if (checkbox.checked) {
+                section.classList.add('active');
+                if (sectionId === 'armorProperties') {
+                    const is3DArmor = document.getElementById('is3DArmor').checked;
+                    document.getElementById('armorLayersSection').style.display = is3DArmor ? 'none' : 'block';
+                }
+            } else {
+                section.classList.remove('active');
+            }
+        }
+
+        function toggleGenerateFields() {
+            const isGenerated = document.getElementById('isGenerated').checked;
+            document.getElementById('modelPathSection').style.display = isGenerated ? 'none' : 'block';
+            document.getElementById('texturesSection').style.display = isGenerated ? 'block' : 'none';
+        }
+
+        document.getElementById('itemForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateConfig();
+        });
+
+        // Add real-time update listeners
+        const formInputs = document.querySelectorAll('#itemForm input, #itemForm select, #itemForm textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('input', generateConfig);
+            input.addEventListener('change', generateConfig);
+        });
+
+        function addTexture() {
+            const texturesList = document.getElementById('texturesList');
+            const newTexture = document.createElement('div');
+            newTexture.className = 'texture-entry mb-2';
+            newTexture.innerHTML = `
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Path to texture (e.g., table/toolsmithing_table_bottom.png)">
+                    <button type="button" class="btn btn-outline-danger" onclick="removeTexture(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            texturesList.appendChild(newTexture);
+            
+            // Add listeners to new input
+            newTexture.querySelector('input').addEventListener('input', generateConfig);
+        }
+
+        function removeTexture(button) {
+            button.closest('.texture-entry').remove();
+        }
+
+        function addLore() {
+            const loreList = document.getElementById('loreList');
+            const newLore = document.createElement('div');
+            newLore.className = 'lore-entry mb-2';
+            newLore.innerHTML = `
+                <div class="input-group">
+                    <textarea class="form-control" placeholder="Enter lore (use & for color codes)" rows="2"></textarea>
+                    <button type="button" class="btn btn-outline-danger" onclick="removeLore(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            loreList.appendChild(newLore);
+            
+            // Add listeners to new textarea
+            newLore.querySelector('textarea').addEventListener('input', generateConfig);
+        }
+
+        function removeLore(button) {
+            button.closest('.lore-entry').remove();
+            generateConfig();
+        }
+
+        function generateConfig() {
+            const namespace = document.getElementById('namespace').value;
+            const itemId = document.getElementById('itemId').value;
+            const displayName = document.getElementById('displayName').value;
+            const material = document.getElementById('material').value;
+            const modelPath = document.getElementById('modelPath').value;
+            const fireResistant = document.getElementById('fireResistant').checked;
+            const isConsumable = document.getElementById('isConsumable').checked;
+            const isArmor = document.getElementById('isArmor').checked;
+            const isWeapon = document.getElementById('isWeapon').checked;
+            const isHat = document.getElementById('isHat').checked;
+            const isBlock = document.getElementById('isBlock').checked;
+            const isGenerated = document.getElementById('isGenerated').checked;
+            const hasDurability = document.getElementById('hasDurability').checked;
+            const isFuel = document.getElementById('isFuel').checked;
+            const isJukeboxDisc = document.getElementById('isJukeboxDisc').checked;
+            const hasCustomTooltip = document.getElementById('hasCustomTooltip').checked;
+
+            // Get all texture paths
+            const textureInputs = document.querySelectorAll('#texturesList input');
+            const textures = Array.from(textureInputs)
+                .map(input => input.value)
+                .filter(value => value.trim() !== '');
+
+            // Get all lore lines
+            const loreTextareas = document.querySelectorAll('#loreList textarea');
+            const loreLines = Array.from(loreTextareas)
+                .map(textarea => textarea.value.trim().split('\n'))
+                .flat()
+                .filter(value => value !== '');
+
+            let config = `info:
+  namespace: ${namespace}
+items:
+  ${itemId}:
+    display_name: ${displayName}
+    resource:
+      material: ${material}
+      generate: ${isGenerated ? 'true' : 'false'}`;
+
+            if (isGenerated) {
+                // For generated resources, use textures
+                if (textures.length > 0) {
+                    config += `\n      textures:`;
+                    textures.forEach(texture => {
+                        config += `\n        - ${texture}`;
+                    });
+                }
+            } else if (modelPath.trim() !== '') {
+                // For non-generated resources, use model_path only if it's provided
+                config += `\n      model_path: ${modelPath}`;
+            }
+
+            if (loreLines.length > 0) {
+                config += `\n    lore:`;
+                loreLines.forEach(line => {
+                    config += `\n      - '${line}'`;
+                });
+            }
+
+            if (isConsumable) {
+                const consumableType = document.getElementById('consumableType').value;
+                const nutrition = document.getElementById('nutrition').value;
+                const saturation = document.getElementById('saturation').value;
+                const hasThirst = document.getElementById('hasThirst').checked;
+                const thirstAmount = document.getElementById('thirstAmount').value;
+
+                config += `\n    consumable:
+      nutrition: ${nutrition}
+      saturation: ${saturation}`;
+
+                if (consumableType === 'drink' && hasThirst) {
+                    config += `\n    events:
+      drink:
+        increment_player_stat:
+          name: thirst
+          amount: ${thirstAmount}`;
+                }
+            }
+
+            if (isArmor) {
+                const armorSetId = document.getElementById('armorSetId').value;
+                const armorSlot = document.getElementById('armorSlot').value;
+                const armorPoints = document.getElementById('armorPoints').value;
+                const armorToughness = document.getElementById('armorToughness').value;
+                const knockbackResistance = document.getElementById('knockbackResistance').value;
+                const movementSpeed = document.getElementById('movementSpeed').value;
+                const attackSpeed = document.getElementById('attackSpeed').value;
+                const attackDamage = document.getElementById('attackDamage').value;
+                const attackKnockback = document.getElementById('attackKnockback').value;
+                const flyingSpeed = document.getElementById('flyingSpeed').value;
+                const luck = document.getElementById('luck').value;
+                const is3DArmor = document.getElementById('is3DArmor').checked;
+                const armorLayer1 = document.getElementById('armorLayer1').value;
+                const armorLayer2 = document.getElementById('armorLayer2').value;
+
+                // Add armor properties to the item
+                config += `\n    equipment:
+      id: ${namespace}:${armorSetId}
+      slot_attribute_modifiers:`;
+
+                // Add attributes only if they have values
+                if (armorPoints) config += `\n        armor: ${armorPoints}`;
+                if (armorToughness) config += `\n        armor_toughness: ${armorToughness}`;
+                if (knockbackResistance) config += `\n        knockback_resistance: ${knockbackResistance}`;
+                if (movementSpeed) config += `\n        movement_speed: ${movementSpeed}`;
+                if (attackSpeed) config += `\n        attack_speed: ${attackSpeed}`;
+                if (attackDamage) config += `\n        attack_damage: ${attackDamage}`;
+                if (attackKnockback) config += `\n        attack_knockback: ${attackKnockback}`;
+                if (flyingSpeed) config += `\n        flying_speed: ${flyingSpeed}`;
+                if (luck) config += `\n        luck: ${luck}`;
+
+                if (is3DArmor) {
+                    config += `\n    resource:
+      generate: false
+      model_path: armor/${armorSetId}_${armorSlot}_3d`;
+                } else {
+                    // For non-3D armor, use the texture path
+                    config += `\n    resource:
+      generate: true
+      texture: item/${armorSetId}_${armorSlot}`;
+                }
+            }
+
+            if (isWeapon) {
+                const slot = document.getElementById('attributeSlot').value;
+                const attributes = {};
+                
+                // Get all attribute inputs
+                document.querySelectorAll('.attribute-input').forEach(input => {
+                    const value = parseFloat(input.value);
+                    if (value !== 0) {
+                        attributes[input.dataset.attribute] = value;
+                    }
+                });
+
+                if (Object.keys(attributes).length > 0) {
+                    config += `\n    attribute_modifiers:
+      ${slot}:`;
+                    for (const [attr, value] of Object.entries(attributes)) {
+                        config += `\n        ${attr}: ${value}`;
+                    }
+                }
+            }
+
+            if (hasDurability) {
+                const maxCustomDurability = document.getElementById('maxCustomDurability').value;
+                const customDurability = document.getElementById('customDurability').value;
+                const disappearWhenBroken = document.getElementById('disappearWhenBroken').checked;
+                const unbreakable = document.getElementById('unbreakable').checked;
+                const usages = document.getElementById('usages').value;
+
+                config += `\n    durability:
+      max_custom_durability: ${maxCustomDurability}
+      custom_durability: ${customDurability}
+      disappear_when_broken: ${disappearWhenBroken}
+      unbreakable: ${unbreakable}
+      usages: ${usages}`;
+            }
+
+            // Add item flags
+            const itemFlags = [];
+            if (document.getElementById('hideAttributes').checked) itemFlags.push('HIDE_ATTRIBUTES');
+            if (document.getElementById('hideDestroys').checked) itemFlags.push('HIDE_DESTROYS');
+            if (document.getElementById('hideEnchants').checked) itemFlags.push('HIDE_ENCHANTS');
+            if (document.getElementById('hidePlacedOn').checked) itemFlags.push('HIDE_PLACED_ON');
+            if (document.getElementById('hidePotionEffects').checked) itemFlags.push('HIDE_POTION_EFFECTS');
+            if (document.getElementById('hideUnbreakable').checked) itemFlags.push('HIDE_UNBREAKABLE');
+
+            if (itemFlags.length > 0) {
+                config += `\n    item_flags:`;
+                itemFlags.forEach(flag => {
+                    config += `\n      - ${flag}`;
+                });
+            }
+
+            // Add drop properties
+            const dropGlow = document.getElementById('dropGlow').checked;
+            const showDropName = document.getElementById('showDropName').checked;
+
+            if (dropGlow || showDropName) {
+                config += `\n    drop:`;
+                if (dropGlow) {
+                    const glowColor = document.getElementById('glowColor').value;
+                    config += `\n      glow:
+        enabled: true
+        color: ${glowColor}`;
+                }
+                if (showDropName) {
+                    config += `\n      show_name: true`;
+                }
+            }
+
+            if (fireResistant) {
+                config += '\n    fire_resistant: true';
+            }
+
+            if (isHat) {
+                config += '\n    behaviours:\n      hat: true';
+            }
+
+            if (isBlock) {
+                const blockType = document.getElementById('blockType').value;
+                const hardness = document.getElementById('blockHardness').value;
+                const blastResistance = document.getElementById('blastResistance').value;
+                const breakParticles = document.getElementById('breakParticles').value;
+                const hasCustomVariants = document.getElementById('hasCustomVariants').checked;
+                const dropWhenMined = document.getElementById('dropWhenMined').checked;
+                const dropOnShears = document.getElementById('dropOnShears').checked;
+                const dropOnSilkTouch = document.getElementById('dropOnSilkTouch').checked;
+                const noExplosion = document.getElementById('noExplosion').checked;
+
+                config += `\n    specific_properties:
+      block:
+        placed_model:
+          type: ${blockType}
+          break_particles: ${breakParticles}`;
+
+                if (document.getElementById('shiftUp').checked) {
+                    config += `\n          shift_up: true`;
+                }
+
+                if (hasCustomVariants) {
+                    config += `\n          custom_variants:`;
+                    const variantInputs = document.querySelectorAll('#variantsList .variant-entry');
+                    variantInputs.forEach(variant => {
+                        const inputs = variant.querySelectorAll('input');
+                        const variantId = inputs[0].value;
+                        const modelPath = inputs[1].value;
+                        if (variantId && modelPath) {
+                            config += `\n            ${variantId}:
+              model: ${modelPath}`;
+                        }
+                    });
+                }
+
+                config += `\n        drop_when_mined: ${dropWhenMined}
+        drop_on_shears: ${dropOnShears}
+        drop_on_silk_touch: ${dropOnSilkTouch}
+        hardness: ${hardness}
+        blast_resistance: ${blastResistance}`;
+
+                if (noExplosion) {
+                    config += `\n        no_explosion: true`;
+                }
+
+                // Add tool lists
+                const breakToolsBlacklist = getToolList('breakToolsBlacklist');
+                const breakToolsWhitelist = getToolList('breakToolsWhitelist');
+                const eventsToolsBlacklist = getToolList('eventsToolsBlacklist');
+                const eventsToolsWhitelist = getToolList('eventsToolsWhitelist');
+
+                if (breakToolsBlacklist.length > 0) {
+                    config += `\n        break_tools_blacklist:`;
+                    breakToolsBlacklist.forEach(tool => {
+                        config += `\n          - "${tool}"`;
+                    });
+                }
+
+                if (breakToolsWhitelist.length > 0) {
+                    config += `\n        break_tools_whitelist:`;
+                    breakToolsWhitelist.forEach(tool => {
+                        config += `\n          - "${tool}"`;
+                    });
+                }
+
+                if (eventsToolsBlacklist.length > 0) {
+                    config += `\n        events_tools_blacklist:`;
+                    eventsToolsBlacklist.forEach(tool => {
+                        config += `\n          - "${tool}"`;
+                    });
+                }
+
+                if (eventsToolsWhitelist.length > 0) {
+                    config += `\n        events_tools_whitelist:`;
+                    eventsToolsWhitelist.forEach(tool => {
+                        config += `\n          - "${tool}"`;
+                    });
+                }
+
+                // ... rest of the existing block properties code ...
+            }
+
+            if (document.getElementById('isFurniture').checked) {
+                const entity = document.getElementById('furnitureEntity').value;
+                const breakParticles = document.getElementById('furnitureBreakParticles').value;
+                const dropWhenMined = document.getElementById('furnitureDropWhenMined').checked;
+                const x = document.getElementById('furnitureX').value;
+                const y = document.getElementById('furnitureY').value;
+                const z = document.getElementById('furnitureZ').value;
+                const solid = document.getElementById('furnitureSolid').checked;
+                const floor = document.getElementById('furnitureFloor').checked;
+                const ceiling = document.getElementById('furnitureCeiling').checked;
+                const walls = document.getElementById('furnitureWalls').checked;
+                const fixedRotation = document.getElementById('furnitureFixedRotation').checked;
+                const height = document.getElementById('furnitureHeight').value;
+                const width = document.getElementById('furnitureWidth').value;
+                const length = document.getElementById('furnitureLength').value;
+                const xOffset = document.getElementById('furnitureXOffset').value;
+                const yOffset = document.getElementById('furnitureYOffset').value;
+                const zOffset = document.getElementById('furnitureZOffset').value;
+                const breakSound = document.getElementById('furnitureBreakSound').value;
+                const breakSoundPitch = document.getElementById('furnitureBreakSoundPitch').value;
+                const placeSound = document.getElementById('furniturePlaceSound').value;
+                const placeSoundPitch = document.getElementById('furniturePlaceSoundPitch').value;
+                const hitSound = document.getElementById('furnitureHitSound').value;
+                const hitSoundPitch = document.getElementById('furnitureHitSoundPitch').value;
+                const stepSound = document.getElementById('furnitureStepSound').value;
+                const stepSoundPitch = document.getElementById('furnitureStepSoundPitch').value;
+                const fallSound = document.getElementById('furnitureFallSound').value;
+                const fallSoundPitch = document.getElementById('furnitureFallSoundPitch').value;
+                const breakItem = document.getElementById('furnitureBreakItem').value;
+                const breakMin = document.getElementById('furnitureBreakMin').value;
+                const breakMax = document.getElementById('furnitureBreakMax').value;
+                const breakChance = document.getElementById('furnitureBreakChance').value;
+                const isChair = document.getElementById('isChair').checked;
+                const sitHeight = document.getElementById('sitHeight').value;
+
+                config += `\n    behaviours:
+      furniture:
+        entity: ${entity}
+        break_particles: ${breakParticles}
+        drop_when_mined: ${dropWhenMined}
+        display_transformation:
+          translation:
+            x: ${x}
+            y: ${y}
+            z: ${z}
+        solid: ${solid}
+        placeable_on:
+          floor: ${floor}
+          ceiling: ${ceiling}
+          walls: ${walls}
+        fixed_rotation: ${fixedRotation}
+        hitbox:
+          height: ${height}
+          width: ${width}
+          length: ${length}`;
+
+                // Add offset properties only if they are not zero
+                if (xOffset !== "0") config += `\n          x_offset: ${xOffset}`;
+                if (yOffset !== "0") config += `\n          y_offset: ${yOffset}`;
+                if (zOffset !== "0") config += `\n          z_offset: ${zOffset}`;
+
+                if (isChair) {
+                    const sitHeight = document.getElementById('sitHeight').value;
+                    const oppositeDirection = document.getElementById('oppositeDirection').checked;
+                    const passengerFrontView = document.getElementById('passengerFrontView').checked;
+                    const passengerRotateBody = document.getElementById('passengerRotateBody').checked;
+                    
+                    config += `\n      furniture_sit:
+        sit_height: ${sitHeight}
+        passenger_front_view_on_sit: ${passengerFrontView}
+        passenger_rotate_body: ${passengerRotateBody}
+        opposite_direction: ${oppositeDirection}`;
+                }
+
+                if (breakSound || placeSound || hitSound || stepSound || fallSound) {
+                    config += `\n        sound:`;
+                    if (breakSound) config += `\n          break:\n            name: ${breakSound}\n            pitch: ${breakSoundPitch}`;
+                    if (placeSound) config += `\n          place:\n            name: ${placeSound}\n            pitch: ${placeSoundPitch}`;
+                    if (hitSound) config += `\n          hit:\n            name: ${hitSound}\n            pitch: ${hitSoundPitch}`;
+                    if (stepSound) config += `\n          step:\n            name: ${stepSound}\n            pitch: ${stepSoundPitch}`;
+                    if (fallSound) config += `\n          fall:\n            name: ${fallSound}\n            pitch: ${fallSoundPitch}`;
+                }
+
+                if (breakItem) {
+                    config += `\n    events:
+      placed_furniture:
+        break:
+          drop_item:
+            item: ${breakItem}
+            min_amount: ${breakMin}
+            max_amount: ${breakMax}
+            chance: ${breakChance}`;
+                }
+
+                // Add entity-specific properties
+                if (entity === 'armor_stand') {
+                    const small = document.getElementById('armorStandSmall').checked;
+                    const fixedRotation = document.getElementById('armorStandFixedRotation').checked;
+                    config += `\n        small: ${small}
+        fixed_rotation: ${fixedRotation}`;
+                } else if (entity === 'item_frame') {
+                    const lightLevel = document.getElementById('itemFrameLightLevel').value;
+                    if (lightLevel > 0) {
+                        config += `\n        light_level: ${lightLevel}`;
+                    }
+                }
+            }
+
+            if (isFuel) {
+                const burnTicks = document.getElementById('burnTicks').value;
+                const machines = [];
+                if (document.getElementById('furnaceFuel').checked) machines.push('FURNACE');
+                if (document.getElementById('blastFurnaceFuel').checked) machines.push('BLAST_FURNACE');
+                if (document.getElementById('smokerFuel').checked) machines.push('SMOKER');
+
+                config += `\n    behaviours:
+      fuel:
+        burn_ticks: ${burnTicks}
+        machines:`;
+                machines.forEach(machine => {
+                    config += `\n        - ${machine}`;
+                });
+            }
+
+            if (isJukeboxDisc) {
+                const jukeboxSong = document.getElementById('jukeboxSong').value;
+                const jukeboxDescription = document.getElementById('jukeboxDescription').value;
+                const jukeboxSubtitle = document.getElementById('jukeboxSubtitle').value;
+                const jukeboxEnabled = document.getElementById('jukeboxEnabled').checked;
+
+                config += `\n    jukebox_disc:
+      song: ${jukeboxSong}`;
+
+                // Add sound configuration
+                config = `sounds:
+  ${jukeboxSong.split(':')[1]}:
+    path: ${jukeboxSong.split(':')[1]}
+    settings:
+      subtitle: ${jukeboxSubtitle}
+    jukebox:
+      enabled: ${jukeboxEnabled}
+      description: "${jukeboxDescription}"
+
+${config}`;
+
+                // Add language overwrite
+                config = `minecraft_lang_overwrite:
+  my_lang_overwrite:
+    entries:
+      ${jukeboxSubtitle}: "${displayName}"
+    languages:
+    - ALL
+
+${config}`;
+            }
+
+            if (hasCustomTooltip) {
+                const tooltipStyle = document.getElementById('tooltipStyle').value;
+                config += `\n    tooltip_style: ${tooltipStyle}`;
+            }
+
+            document.getElementById('preview').innerHTML = `<pre>${config}</pre>`;
+        }
+
+        function copyToClipboard() {
+            const preview = document.getElementById('preview').textContent;
+            navigator.clipboard.writeText(preview).then(() => {
+                alert('Configuration copied to clipboard!');
+            });
+        }
+
+        const blockTypeInfo = {
+            'REAL_NOTE': 'Uses a real block (note_block), no lag, no entities, 100% real blocks. Downsides: no support for transparency. Max of 750 blocks in total.',
+            'REAL': 'Uses a real block (mushroom), no lag, no entities, 100% real blocks. Downsides: Max of 191 blocks in total. (REAL_NOTE is more stable)',
+            'REAL_TRANSPARENT': 'Uses a real block (chorus), no lag, no entities, 100% real blocks, also with transparency support! Downsides: Max of 63 blocks in total.',
+            'REAL_WIRE': 'Uses a real block (tripwire), no lag, no entities, 100% real blocks. Downsides: Max of 127 blocks in total.',
+            'TILE': 'Uses tile blocks (modified spawner with custom skin). No block limit. Downsides: Not a 100% real block, texture vanishes at distance, may cause lag on low-end PCs.',
+            'FIRE': 'Special type for fire blocks. Downsides: Only a max of 14 custom fires are possible.'
+        };
+
+        function updateBlockTypeInfo() {
+            const blockType = document.getElementById('blockType').value;
+            const infoElement = document.getElementById('blockTypeInfo');
+            infoElement.textContent = blockTypeInfo[blockType];
+        }
+
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBlockTypeInfo();
+            // Initially hide textures section and show model path
+            document.getElementById('texturesSection').style.display = 'none';
+            document.getElementById('modelPathSection').style.display = 'block';
+
+            // Prevent form submission on Enter key
+            document.getElementById('itemForm').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Initialize Select2 for material field
+        $(document).ready(function() {
+            $('#material').select2({
+                theme: 'bootstrap-5',
+                tags: true,
+                placeholder: 'Select or type a material...',
+                allowClear: true,
+                data: minecraftItems.getAllItems().map(item => ({
+                    id: item.id,
+                    text: `${item.text} (${item.category})`,
+                    category: item.category
+                }))
+            });
+
+            // Group items by category in the dropdown
+            $('#material').on('select2:open', function() {
+                const $dropdown = $('.select2-dropdown');
+                const $results = $dropdown.find('.select2-results__options');
+                
+                // Group items by category
+                const groupedItems = {};
+                minecraftItems.getAllItems().forEach(item => {
+                    if (!groupedItems[item.category]) {
+                        groupedItems[item.category] = [];
+                    }
+                    groupedItems[item.category].push({
+                        id: item.id,
+                        text: item.text
+                    });
+                });
+
+                // Create optgroups
+                $results.empty();
+                Object.entries(groupedItems).forEach(([category, items]) => {
+                    const $group = $('<optgroup>').attr('label', category);
+                    items.forEach(item => {
+                        $group.append($('<option>').val(item.id).text(item.text));
+                    });
+                    $results.append($group);
+                });
+            });
+        });
+
+        // Add event listener for 3D armor checkbox
+        document.getElementById('is3DArmor').addEventListener('change', function() {
+            document.getElementById('armorLayersSection').style.display = this.checked ? 'none' : 'block';
+        });
+
+        function updateConsumableType() {
+            const type = document.getElementById('consumableType').value;
+            const drinkProperties = document.getElementById('drinkProperties');
+            drinkProperties.style.display = type === 'drink' ? 'block' : 'none';
+        }
+
+        document.getElementById('hasThirst').addEventListener('change', function() {
+            document.getElementById('thirstAmountSection').style.display = this.checked ? 'block' : 'none';
+        });
+
+        function updateAttributeSlot() {
+            // Clear all attribute inputs when changing slot
+            document.querySelectorAll('.attribute-input').forEach(input => {
+                input.value = '0';
+            });
+            generateConfig();
+        }
+
+        function toggleDropGlow() {
+            const dropGlow = document.getElementById('dropGlow').checked;
+            document.getElementById('glowColorSection').style.display = dropGlow ? 'block' : 'none';
+        }
+
+        function toggleCustomVariants() {
+            const hasCustomVariants = document.getElementById('hasCustomVariants').checked;
+            document.getElementById('customVariantsSection').style.display = hasCustomVariants ? 'block' : 'none';
+        }
+
+        function addVariant() {
+            const variantsList = document.getElementById('variantsList');
+            const newVariant = document.createElement('div');
+            newVariant.className = 'variant-entry mb-2';
+            newVariant.innerHTML = `
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Variant ID (e.g., variant_1)">
+                    <input type="text" class="form-control" placeholder="Model Path (e.g., graves/1)">
+                    <button type="button" class="btn btn-outline-danger" onclick="removeVariant(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            variantsList.appendChild(newVariant);
+            
+            // Add listeners to new inputs
+            newVariant.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', generateConfig);
+            });
+        }
+
+        function removeVariant(button) {
+            button.closest('.variant-entry').remove();
+            generateConfig();
+        }
+
+        function addTool(listId) {
+            const list = document.getElementById(listId);
+            const newTool = document.createElement('div');
+            newTool.className = 'tool-entry mb-2';
+            newTool.innerHTML = `
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Tool ID (e.g., test:1)">
+                    <button type="button" class="btn btn-outline-danger" onclick="removeTool(this, '${listId}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            list.appendChild(newTool);
+            
+            // Add listeners to new input
+            newTool.querySelector('input').addEventListener('input', generateConfig);
+        }
+
+        function removeTool(button, listId) {
+            button.closest('.tool-entry').remove();
+            generateConfig();
+        }
+
+        function getToolList(listId) {
+            const inputs = document.querySelectorAll(`#${listId} input`);
+            return Array.from(inputs)
+                .map(input => input.value.trim())
+                .filter(value => value !== '');
+        }
+
+        function toggleChairProperties() {
+            const isChair = document.getElementById('isChair').checked;
+            document.getElementById('chairProperties').style.display = isChair ? 'block' : 'none';
+        }
+
+        // Add this function to handle entity type changes
+        function updateFurnitureEntityType() {
+            const entityType = document.getElementById('furnitureEntity').value;
+            document.getElementById('armorStandProperties').style.display = entityType === 'armor_stand' ? 'block' : 'none';
+            document.getElementById('itemFrameProperties').style.display = entityType === 'item_frame' ? 'block' : 'none';
+            
+            // Update default values based on entity type
+            if (entityType === 'armor_stand') {
+                document.getElementById('furnitureSolid').checked = true;
+                document.getElementById('furnitureFloor').checked = true;
+                document.getElementById('furnitureCeiling').checked = false;
+                document.getElementById('furnitureWalls').checked = false;
+                document.getElementById('furnitureFixedRotation').checked = true;
+            } else if (entityType === 'item_frame') {
+                document.getElementById('furnitureSolid').checked = false;
+                document.getElementById('furnitureFloor').checked = true;
+                document.getElementById('furnitureCeiling').checked = true;
+                document.getElementById('furnitureWalls').checked = true;
+                document.getElementById('furnitureFixedRotation').checked = false;
+            }
+            
+            generateConfig();
+        }
+    </script>
+</body>
+</html>

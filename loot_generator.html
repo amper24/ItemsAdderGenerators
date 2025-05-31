@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ItemsAdder Loot Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+        }
+        
+        body {
+            background-color: #f5f6fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .preview-area {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            font-family: 'Consolas', monospace;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 800px;
+            min-height: 600px;
+            overflow-y: auto;
+        }
+
+        .loot-item {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .biome-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .world-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="site/index.html">
+                <i class="fas fa-cube me-2"></i>
+                ItemsAdder Generators
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="itemsadder_generator.html">
+                            <i class="fas fa-cube me-1"></i>Item Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cooking_generator.html">
+                            <i class="fas fa-fire me-1"></i>Cooking Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="crafting_generator.html">
+                            <i class="fas fa-hammer me-1"></i>Crafting Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="loot_generator.html">
+                            <i class="fas fa-gift me-1"></i>Loot Generator
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="hud_generator.html">
+                            <i class="fas fa-desktop me-1"></i>HUD Generator
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Loot Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="lootForm">
+                            <div class="mb-3">
+                                <label class="form-label">Namespace</label>
+                                <input type="text" class="form-control" id="namespace" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Loot Type</label>
+                                <select class="form-select" id="lootType" onchange="updateLootType()">
+                                    <option value="blocks">Blocks</option>
+                                    <option value="mobs">Mobs</option>
+                                    <option value="fishing">Fishing</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Loot ID</label>
+                                <input type="text" class="form-control" id="lootId" required>
+                            </div>
+
+                            <div id="blockOptions">
+                                <div class="mb-3">
+                                    <label class="form-label">Block Type</label>
+                                    <input type="text" class="form-control" id="blockType" placeholder="namespace:block_id or VANILLA_BLOCK">
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dropOnlyFirst">
+                                        <label class="form-check-label">Drop Only First</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Biomes</label>
+                                    <div id="biomeList">
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" placeholder="Biome name (e.g., PLAINS, DESERT)">
+                                            <button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addBiomeField()">
+                                        <i class="fas fa-plus me-1"></i>Add Biome
+                                    </button>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Worlds</label>
+                                    <div class="world-list">
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" placeholder="World name or pattern (e.g., world_*)">
+                                            <button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addWorldField()">
+                                        <i class="fas fa-plus me-1"></i>Add World
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="mobOptions" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Mob Type</label>
+                                    <input type="text" class="form-control" id="mobType" placeholder="VANILLA_MOB or namespace:mob_id">
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="ignoreSpawner">
+                                        <label class="form-check-label">Ignore Spawner</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">NBT Data</label>
+                                    <div id="nbtList">
+                                        <!-- NBT fields will be added here -->
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addNBTField()">
+                                        <i class="fas fa-plus me-1"></i>Add NBT Field
+                                    </button>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Metadata</label>
+                                    <div id="metadataList">
+                                        <!-- Metadata fields will be added here -->
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addMetadataField()">
+                                        <i class="fas fa-plus me-1"></i>Add Metadata Field
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="fishingOptions" style="display: none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Biomes</label>
+                                    <div id="fishingBiomeList">
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" placeholder="Biome name (e.g., WARM_OCEAN, OCEAN)">
+                                            <button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addFishingBiomeField()">
+                                        <i class="fas fa-plus me-1"></i>Add Biome
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Items</label>
+                                <div id="itemsList">
+                                    <!-- Items will be added here -->
+                                </div>
+                                <button type="button" class="btn btn-outline-primary mt-2" onclick="addItem()">
+                                    <i class="fas fa-plus me-2"></i>Add Item
+                                </button>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Experience Drops</label>
+                                <div id="expList">
+                                    <!-- Experience drops will be added here -->
+                                </div>
+                                <button type="button" class="btn btn-outline-primary mt-2" onclick="addExpDrop()">
+                                    <i class="fas fa-plus me-2"></i>Add Experience Drop
+                                </button>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Generate Loot</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="preview-area" id="preview">
+                            <pre>Loot configuration will appear here...</pre>
+                        </div>
+                        <button class="btn btn-primary mt-3" onclick="copyToClipboard()">
+                            <i class="fas fa-copy me-2"></i>Copy to Clipboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateLootType() {
+            const lootType = document.getElementById('lootType').value;
+            document.getElementById('blockOptions').style.display = lootType === 'blocks' ? 'block' : 'none';
+            document.getElementById('mobOptions').style.display = lootType === 'mobs' ? 'block' : 'none';
+            document.getElementById('fishingOptions').style.display = lootType === 'fishing' ? 'block' : 'none';
+        }
+
+        function addWorldField() {
+            const worldList = document.querySelector('.world-list');
+            const div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="World name or pattern (e.g., world_*)">
+                <button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            worldList.appendChild(div);
+            
+            // Add listeners to new input
+            div.querySelector('input').addEventListener('input', generateLoot);
+        }
+
+        function addNBTField() {
+            const nbtList = document.getElementById('nbtList');
+            const div = document.createElement('div');
+            div.className = 'loot-item';
+            div.innerHTML = `
+                <div class="row mb-2">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="NBT Name">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Path">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Value">
+                    </div>
+                    <div class="col">
+                        <select class="form-select">
+                            <option value="string">String</option>
+                            <option value="int">Integer</option>
+                            <option value="float">Float</option>
+                            <option value="boolean">Boolean</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-outline-danger" onclick="this.parentElement.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            nbtList.appendChild(div);
+            
+            // Add listeners to new inputs
+            div.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('input', generateLoot);
+                input.addEventListener('change', generateLoot);
+            });
+        }
+
+        function addMetadataField() {
+            const metadataList = document.getElementById('metadataList');
+            const div = document.createElement('div');
+            div.className = 'loot-item';
+            div.innerHTML = `
+                <div class="row mb-2">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Name">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Value">
+                    </div>
+                    <div class="col">
+                        <select class="form-select">
+                            <option value="string">String</option>
+                            <option value="int">Integer</option>
+                            <option value="float">Float</option>
+                            <option value="boolean">Boolean</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-outline-danger" onclick="this.parentElement.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            metadataList.appendChild(div);
+            
+            // Add listeners to new inputs
+            div.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('input', generateLoot);
+                input.addEventListener('change', generateLoot);
+            });
+        }
+
+        function addItem() {
+            const itemsList = document.getElementById('itemsList');
+            const div = document.createElement('div');
+            div.className = 'loot-item';
+            div.innerHTML = `
+                <div class="row mb-2">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Item ID">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Item (namespace:item_id)">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="Min Amount" min="1" value="1">
+                    </div>
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="Max Amount" min="1" value="1">
+                    </div>
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="Chance" min="0" max="100" value="100">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="ignoreFortune">
+                            <label class="form-check-label">Ignore Fortune</label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-outline-danger" onclick="this.parentElement.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            itemsList.appendChild(div);
+            
+            // Add listeners to new inputs
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', generateLoot);
+                input.addEventListener('change', generateLoot);
+            });
+        }
+
+        function addBiomeField() {
+            const list = document.getElementById('biomeList');
+            const div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="Biome name (e.g., PLAINS, DESERT)">
+                <button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            list.appendChild(div);
+            
+            // Add listeners to new input
+            div.querySelector('input').addEventListener('input', generateLoot);
+        }
+
+        function addFishingBiomeField() {
+            const list = document.getElementById('fishingBiomeList');
+            const div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="Biome name (e.g., WARM_OCEAN, OCEAN)">
+                <button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            list.appendChild(div);
+            
+            // Add listeners to new input
+            div.querySelector('input').addEventListener('input', generateLoot);
+        }
+
+        function addExpDrop() {
+            const expList = document.getElementById('expList');
+            const div = document.createElement('div');
+            div.className = 'loot-item';
+            div.innerHTML = `
+                <div class="row mb-2">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Experience ID (e.g., exp_1)">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="Min Amount" min="0" value="0">
+                    </div>
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="Max Amount" min="0" value="0">
+                    </div>
+                    <div class="col">
+                        <input type="number" class="form-control" placeholder="Chance" min="0" max="100" value="100">
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-outline-danger" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            expList.appendChild(div);
+            
+            // Add listeners to new inputs
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', generateLoot);
+                input.addEventListener('change', generateLoot);
+            });
+        }
+
+        function generateLoot() {
+            const namespace = document.getElementById('namespace').value;
+            const lootType = document.getElementById('lootType').value;
+            const lootId = document.getElementById('lootId').value;
+
+            let config = `info:
+  namespace: ${namespace}
+loots:
+  ${lootType}:
+    ${lootId}:`;
+
+            if (lootType === 'blocks') {
+                const blockType = document.getElementById('blockType').value;
+                const dropOnlyFirst = document.getElementById('dropOnlyFirst').checked;
+                
+                config += `\n      type: ${blockType}`;
+                
+                if (dropOnlyFirst) {
+                    config += `\n      drop_only_first: true`;
+                }
+
+                // Get biomes
+                const biomes = Array.from(document.querySelectorAll('#biomeList input'))
+                    .map(input => input.value)
+                    .filter(value => value.trim() !== '');
+
+                if (biomes.length > 0) {
+                    config += `\n      biomes:`;
+                    biomes.forEach(biome => {
+                        config += `\n        - ${biome}`;
+                    });
+                }
+
+                // Add worlds
+                const worlds = Array.from(document.querySelectorAll('#blockOptions .world-list input'))
+                    .map(input => input.value)
+                    .filter(value => value.trim() !== '');
+                if (worlds.length > 0) {
+                    config += `\n      worlds:`;
+                    worlds.forEach(world => {
+                        config += `\n        - "${world}"`;
+                    });
+                }
+            } else if (lootType === 'mobs') {
+                const mobType = document.getElementById('mobType').value;
+                const ignoreSpawner = document.getElementById('ignoreSpawner').checked;
+                
+                config += `\n      type: ${mobType}`;
+                
+                if (ignoreSpawner) {
+                    config += `\n      ignore_spawner: true`;
+                }
+
+                // Add NBT data
+                const nbtFields = Array.from(document.querySelectorAll('#nbtList .loot-item')).map(item => {
+                    const inputs = item.querySelectorAll('input, select');
+                    return {
+                        name: inputs[0].value,
+                        path: inputs[1].value,
+                        value: inputs[2].value,
+                        type: inputs[3].value
+                    };
+                }).filter(field => field.name && field.path && field.value);
+
+                if (nbtFields.length > 0) {
+                    config += `\n      nbt:`;
+                    nbtFields.forEach(field => {
+                        config += `\n        ${field.name}:
+          path: ${field.path}
+          value: ${field.value}
+          type: ${field.type}`;
+                    });
+                }
+
+                // Add metadata
+                const metadataFields = Array.from(document.querySelectorAll('#metadataList .loot-item')).map(item => {
+                    const inputs = item.querySelectorAll('input, select');
+                    return {
+                        name: inputs[0].value,
+                        value: inputs[1].value,
+                        type: inputs[2].value
+                    };
+                }).filter(field => field.name && field.value);
+
+                if (metadataFields.length > 0) {
+                    config += `\n      metadata:`;
+                    metadataFields.forEach(field => {
+                        config += `\n        ${field.name}:
+          name: "${field.name}"
+          value: "${field.value}"
+          type: "${field.type}"`;
+                    });
+                }
+            } else if (lootType === 'fishing') {
+                // Get biomes for fishing
+                const fishingBiomes = Array.from(document.querySelectorAll('#fishingBiomeList input'))
+                    .map(input => input.value)
+                    .filter(value => value.trim() !== '');
+
+                if (fishingBiomes.length > 0) {
+                    config += `\n      biomes:`;
+                    fishingBiomes.forEach(biome => {
+                        config += `\n        - ${biome}`;
+                    });
+                }
+            }
+
+            // Add items
+            const items = Array.from(document.querySelectorAll('#itemsList .loot-item')).map(item => {
+                const inputs = item.querySelectorAll('input');
+                return {
+                    id: inputs[0].value,
+                    item: inputs[1].value,
+                    minAmount: inputs[2].value,
+                    maxAmount: inputs[3].value,
+                    chance: inputs[4].value,
+                    ignoreFortune: inputs[5].checked
+                };
+            }).filter(item => item.id && item.item);
+
+            if (items.length > 0) {
+                config += `\n      items:`;
+                items.forEach(item => {
+                    config += `\n        ${item.id}:
+          item: ${item.item}
+          min_amount: ${item.minAmount}
+          max_amount: ${item.maxAmount}
+          chance: ${item.chance}`;
+                    if (item.ignoreFortune) {
+                        config += `\n          ignore_fortune: true`;
+                    }
+                });
+            }
+
+            // Add experience drops
+            const expDrops = Array.from(document.querySelectorAll('#expList .loot-item')).map(item => {
+                const inputs = item.querySelectorAll('input');
+                return {
+                    id: inputs[0].value,
+                    minAmount: inputs[1].value,
+                    maxAmount: inputs[2].value,
+                    chance: inputs[3].value
+                };
+            }).filter(exp => exp.id);
+
+            if (expDrops.length > 0) {
+                config += `\n      exp:`;
+                expDrops.forEach(exp => {
+                    config += `\n        ${exp.id}:
+          min_amount: ${exp.minAmount}
+          max_amount: ${exp.maxAmount}
+          chance: ${exp.chance}`;
+                });
+            }
+
+            document.getElementById('preview').innerHTML = `<pre>${config}</pre>`;
+        }
+
+        function copyToClipboard() {
+            const preview = document.getElementById('preview').textContent;
+            navigator.clipboard.writeText(preview).then(() => {
+                alert('Loot configuration copied to clipboard!');
+            });
+        }
+
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('lootForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                generateLoot();
+            });
+            addItem(); // Add first item by default
+            addExpDrop(); // Add first experience drop by default
+            // Prevent form submission on Enter key
+            document.getElementById('lootForm').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Add real-time update listeners
+        const formInputs = document.querySelectorAll('#lootForm input, #lootForm select');
+        formInputs.forEach(input => {
+            input.addEventListener('input', generateLoot);
+            input.addEventListener('change', generateLoot);
+        });
+    </script>
+</body>
+</html> 

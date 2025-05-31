@@ -1,0 +1,13 @@
+// Initialize the form
+document.addEventListener('DOMContentLoaded', function() {
+    // Initially hide textures section and show model path
+    document.getElementById('texturesSection').style.display = 'none';
+    document.getElementById('modelPathSection').style.display = 'block';
+
+    // Prevent form submission on Enter key
+    document.getElementById('itemForm').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
+    });
+}); 

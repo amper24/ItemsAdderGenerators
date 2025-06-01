@@ -460,6 +460,12 @@
                                     </div>
                                 </div>
                                 <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="hasUsages" onchange="toggleUsages()">
+                                        <label class="form-check-label">Has Usages</label>
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="usagesSection" style="display: none;">
                                     <label class="form-label">Usages</label>
                                     <input type="number" class="form-control" id="usages" min="1" max="1000" value="5">
                                 </div>
@@ -1290,14 +1296,18 @@ items:
                 const customDurability = document.getElementById('customDurability').value;
                 const disappearWhenBroken = document.getElementById('disappearWhenBroken').checked;
                 const unbreakable = document.getElementById('unbreakable').checked;
+                const hasUsages = document.getElementById('hasUsages').checked;
                 const usages = document.getElementById('usages').value;
 
                 config += `\n    durability:
       max_custom_durability: ${maxCustomDurability}
       custom_durability: ${customDurability}
       disappear_when_broken: ${disappearWhenBroken}
-      unbreakable: ${unbreakable}
-      usages: ${usages}`;
+      unbreakable: ${unbreakable}`;
+
+                if (hasUsages) {
+                    config += `\n      usages: ${usages}`;
+                }
             }
 
             // Add item flags
@@ -1783,6 +1793,11 @@ ${config}`;
             }
             
             generateConfig();
+        }
+
+        function toggleUsages() {
+            const hasUsages = document.getElementById('hasUsages').checked;
+            document.getElementById('usagesSection').style.display = hasUsages ? 'block' : 'none';
         }
     </script>
 </body>

@@ -287,6 +287,11 @@
                                     <input type="number" class="form-control" id="consumeSeconds" min="0" max="10" step="0.1" value="1.0">
                                     <small class="text-muted">Time in seconds to consume the item</small>
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Consume Sound</label>
+                                    <input type="text" class="form-control" id="consumeSound" placeholder="block.amethyst_block.hit">
+                                    <small class="text-muted">Sound to play when consuming the item</small>
+                                </div>
                                 <div id="drinkProperties" style="display: none;">
                                     <div class="mb-3">
                                         <div class="form-check">
@@ -1218,11 +1223,16 @@ items:
                 const hasThirst = document.getElementById('hasThirst').checked;
                 const thirstAmount = document.getElementById('thirstAmount').value;
                 const consumeSeconds = document.getElementById('consumeSeconds').value;
+                const consumeSound = document.getElementById('consumeSound').value;
 
                 config += `\n    consumable:
       nutrition: ${nutrition}
       saturation: ${saturation}
       consume_seconds: ${consumeSeconds}`;
+
+                if (consumeSound) {
+                    config += `\n      sound: ${consumeSound}`;
+                }
 
                 if (consumableType === 'drink' && hasThirst) {
                     config += `\n    events:

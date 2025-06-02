@@ -1198,14 +1198,15 @@
   namespace: ${namespace}
 items:
   ${itemId}:
-    display_name: ${displayName}
-    resource:
-      material: ${material}
-      generate: ${isGenerated ? 'true' : 'false'}`;
+    display_name: ${displayName}`;
 
             if (maxStackSize && maxStackSize.trim() !== '') {
                 config += `\n    max_stack_size: ${maxStackSize}`;
             }
+
+            config += `\n    resource:
+      material: ${material}
+      generate: ${isGenerated ? 'true' : 'false'}`;
 
             if (isGenerated) {
                 // For generated resources, use textures

@@ -240,6 +240,12 @@
                                 <small class="text-muted">You can select from Minecraft items or enter custom value</small>
                             </div>
 
+                            <div class="mb-3">
+                                <label class="form-label">Max Stack Size</label>
+                                <input type="number" class="form-control" id="maxStackSize" min="1" max="99" placeholder="Enter stack size (1-99)">
+                                <small class="text-muted">Maximum number of items that can be stacked (1-99)</small>
+                            </div>
+
                             <div class="mb-3" id="modelPathSection">
                                 <label class="form-label">Model Path</label>
                                 <input type="text" class="form-control" id="modelPath">
@@ -1173,6 +1179,7 @@
             const isFuel = document.getElementById('isFuel').checked;
             const isJukeboxDisc = document.getElementById('isJukeboxDisc').checked;
             const hasCustomTooltip = document.getElementById('hasCustomTooltip').checked;
+            const maxStackSize = document.getElementById('maxStackSize').value;
 
             // Get all texture paths
             const textureInputs = document.querySelectorAll('#texturesList input');
@@ -1195,6 +1202,10 @@ items:
     resource:
       material: ${material}
       generate: ${isGenerated ? 'true' : 'false'}`;
+
+            if (maxStackSize && maxStackSize.trim() !== '') {
+                config += `\n    max_stack_size: ${maxStackSize}`;
+            }
 
             if (isGenerated) {
                 // For generated resources, use textures
